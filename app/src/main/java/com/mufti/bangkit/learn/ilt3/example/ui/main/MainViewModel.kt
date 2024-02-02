@@ -19,7 +19,5 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
 
     fun setIsLogin(login: Boolean) = repository.setIsLogin(login)
 
-    fun getThemeSettings(): LiveData<Boolean> {
-        return repository.getThemeSetting().asLiveData()
-    }
+    fun getThemeSettings(): LiveData<Boolean> = repository.getThemeSetting().asLiveData()
 }

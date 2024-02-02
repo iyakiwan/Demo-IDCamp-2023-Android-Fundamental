@@ -37,13 +37,10 @@ class UserRepository private constructor(
 
     fun setIsLogin(login: Boolean) = preference.setIsLogin(login)
 
-    fun getThemeSetting(): Flow<Boolean> {
-        return dataStore.getThemeSetting()
-    }
+    fun getThemeSetting(): Flow<Boolean> = dataStore.getThemeSetting()
 
-    suspend fun saveThemeSetting(isDarkModeActive: Boolean) {
-        return dataStore.saveThemeSetting(isDarkModeActive)
-    }
+    suspend fun saveThemeSetting(isDarkModeActive: Boolean) =
+        dataStore.saveThemeSetting(isDarkModeActive)
 
     companion object {
         @Volatile
