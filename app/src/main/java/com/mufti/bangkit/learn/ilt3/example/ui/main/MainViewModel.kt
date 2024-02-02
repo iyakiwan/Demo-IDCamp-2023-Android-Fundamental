@@ -2,6 +2,7 @@ package com.mufti.bangkit.learn.ilt3.example.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import com.mufti.bangkit.learn.ilt3.example.model.User
 import com.mufti.bangkit.learn.ilt3.example.data.Result
 import com.mufti.bangkit.learn.ilt3.example.data.UserRepository
@@ -17,4 +18,8 @@ class MainViewModel(private val repository: UserRepository) : ViewModel() {
     fun getIsLogin() = repository.getIsLogin()
 
     fun setIsLogin(login: Boolean) = repository.setIsLogin(login)
+
+    fun getThemeSettings(): LiveData<Boolean> {
+        return repository.getThemeSetting().asLiveData()
+    }
 }

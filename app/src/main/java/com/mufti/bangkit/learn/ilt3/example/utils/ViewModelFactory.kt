@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.mufti.bangkit.learn.ilt3.example.data.UserRepository
 import com.mufti.bangkit.learn.ilt3.example.di.Injection
 import com.mufti.bangkit.learn.ilt3.example.ui.main.MainViewModel
+import com.mufti.bangkit.learn.ilt3.example.ui.setting.SettingViewModel
 
 class ViewModelFactory private constructor(private val repository: UserRepository) :
     ViewModelProvider.NewInstanceFactory() {
@@ -13,6 +14,8 @@ class ViewModelFactory private constructor(private val repository: UserRepositor
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(repository) as T
+        } else if (modelClass.isAssignableFrom(SettingViewModel::class.java)) {
+            return SettingViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }

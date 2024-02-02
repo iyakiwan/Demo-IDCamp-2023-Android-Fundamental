@@ -3,14 +3,17 @@ package com.mufti.bangkit.learn.ilt3.example.data
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
+import com.mufti.bangkit.learn.ilt3.example.data.local.datastore.SettingPreferences
 import com.mufti.bangkit.learn.ilt3.example.data.local.reference.SharedPreference
 import com.mufti.bangkit.learn.ilt3.example.data.remote.retrofit.ApiService
 import com.mufti.bangkit.learn.ilt3.example.model.User
 import com.mufti.bangkit.learn.ilt3.example.data.remote.mapper.UserMapper
+import kotlinx.coroutines.flow.Flow
 
 class UserRepository private constructor(
     private val apiService: ApiService,
-    private val preference: SharedPreference
+    private val preference: SharedPreference,
+    private val dataStore: SettingPreferences
 ) {
 
     fun getListUser(): LiveData<Result<List<User>>> = liveData {
@@ -34,15 +37,24 @@ class UserRepository private constructor(
 
     fun setIsLogin(login: Boolean) = preference.setIsLogin(login)
 
+    fun getThemeSetting(): Flow<Boolean> {
+        return dataStore.getThemeSetting()
+    }
+
+    suspend fun saveThemeSetting(isDarkModeActive: Boolean) {
+        return dataStore.saveThemeSetting(isDarkModeActive)
+    }
+
     companion object {
         @Volatile
         private var instance: UserRepository? = null
         fun getInstance(
             apiService: ApiService,
-            preference: SharedPreference
+            preference: SharedPreference,
+            dataStore: SettingPreferences
         ): UserRepository =
             instance ?: synchronized(this) {
-                instance ?: UserRepository(apiService, preference)
+                instance ?: UserRepository(apiService, preference, dataStore)
             }.also { instance = it }
     }
 }

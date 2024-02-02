@@ -1,14 +1,17 @@
 package com.mufti.bangkit.learn.ilt3.example.ui.main
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import com.mufti.bangkit.learn.ilt3.example.data.Result
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mufti.bangkit.learn.ilt3.example.databinding.ActivityMainBinding
 import com.mufti.bangkit.learn.ilt3.example.model.User
+import com.mufti.bangkit.learn.ilt3.example.ui.setting.SettingActivity
 import com.mufti.bangkit.learn.ilt3.example.utils.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
@@ -28,10 +31,10 @@ class MainActivity : AppCompatActivity() {
             factory
         )[MainViewModel::class.java]
 
-        setupRecyclerView()
-
         observerListUser()
+        observerTheme()
 
+        setupRecyclerView()
         setupView()
     }
 
@@ -53,6 +56,10 @@ class MainActivity : AppCompatActivity() {
                 avatar = ""
             ))
             Toast.makeText(this@MainActivity, "User cleaned!", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.fabSetting.setOnClickListener{
+            startActivity(Intent(this, SettingActivity::class.java))
         }
     }
 
@@ -82,6 +89,16 @@ class MainActivity : AppCompatActivity() {
                     binding.pvUsers.isVisible = false
                     Toast.makeText(this@MainActivity, it.error, Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
+
+    private fun observerTheme() {
+        viewModel.getThemeSettings().observe(this) { isDarkModeActive: Boolean ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
     }
