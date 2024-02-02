@@ -3,6 +3,7 @@ package com.mufti.bangkit.learn.ilt3.example.ui.main
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -11,8 +12,10 @@ import com.mufti.bangkit.learn.ilt3.example.R
 import com.mufti.bangkit.learn.ilt3.example.databinding.ItemListUserBinding
 import com.mufti.bangkit.learn.ilt3.example.model.User
 
-class UserAdapter(private var users: List<User>) :
-    RecyclerView.Adapter<UserAdapter.ListViewHolder>() {
+class UserAdapter :
+    ListAdapter<User, UserAdapter.ListViewHolder>(diffCallback) {
+
+    private var onUserSelected: (User) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val binding =
@@ -20,18 +23,17 @@ class UserAdapter(private var users: List<User>) :
         return ListViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = users.size
-
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        val user = users[position]
-        holder.bind(user)
+        val user = getItem(position)
+        holder.bind(user, onUserSelected)
     }
 
     class ListViewHolder(private var binding: ItemListUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
-            user: User
+            user: User,
+            onUserSelected: (User) -> Unit
         ) {
             Glide.with(binding.root)
                 .load(user.avatar)
@@ -41,28 +43,32 @@ class UserAdapter(private var users: List<User>) :
 
             binding.itemName.text = binding.root.context.getString(R.string.format_full_name, user.firstName, user.lastName)
             binding.itemEmail.text = user.email
+
+            binding.root.setOnClickListener {
+                onUserSelected(user)
+            }
         }
     }
 
-    fun refreshData(users: List<User>) {
-        val diffResult = DiffUtil.calculateDiff(diffCallback(this.users, users))
-
-        this.users = users
-        diffResult.dispatchUpdatesTo(this)
+    fun setOnUserSelected(onUserSelected: (User) -> Unit) {
+        this.onUserSelected = onUserSelected
     }
 
-    private fun diffCallback(
-        oldList: List<User>,
-        newList: List<User>
-    ) = object : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldList.size
+    companion object {
+        val diffCallback = object : DiffUtil.ItemCallback<User>() {
+            override fun areItemsTheSame(
+                oldItem: User,
+                newItem: User
+            ): Boolean {
+                return oldItem.id == newItem.id
+            }
 
-        override fun getNewListSize(): Int = newList.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldList[oldItemPosition].id == newList[newItemPosition].id
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-            oldList[oldItemPosition] === newList[newItemPosition]
+            override fun areContentsTheSame(
+                oldItem: User,
+                newItem: User
+            ): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 }
